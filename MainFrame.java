@@ -7,6 +7,7 @@ public class MainFrame extends JFrame {
 
     ControlPanel controlPanel;
     DesignPanel designPanel;
+    PropertiesPanel propertiesPanel;
 
     public MainFrame() {
         super("App");
@@ -17,8 +18,10 @@ public class MainFrame extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.controlPanel = new ControlPanel(this);
         this.designPanel = new DesignPanel(this);
+        this.propertiesPanel = new PropertiesPanel(this);
         add(controlPanel,BorderLayout.NORTH);
         add(designPanel,BorderLayout.CENTER);
+        add(propertiesPanel,BorderLayout.EAST);
         pack();
     }
 

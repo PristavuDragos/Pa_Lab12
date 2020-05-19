@@ -3,12 +3,18 @@ package com.company;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
 
 public class ControlPanel extends JPanel {
     final MainFrame mainFrame;
     JButton addButton = new JButton("Add");
+    JButton saveButton = new JButton("Save");
+    JButton loadButton = new JButton( "Load");
     JLabel label1 = new JLabel("Component name: ");
     JLabel label2 = new JLabel("Width: ");
     JLabel label3 = new JLabel("Height: ");
@@ -41,7 +47,11 @@ public class ControlPanel extends JPanel {
         add(label4);
         add(inputText);
         add(addButton);
+        add(saveButton);
+        add(loadButton);
         addButton.addActionListener(this::addComponent);
+        saveButton.addActionListener(this::save);
+        loadButton.addActionListener(this::load);
     }
 
     private void addComponent(ActionEvent e){
@@ -57,8 +67,8 @@ public class ControlPanel extends JPanel {
                     m.invoke(newComponent,inputText.getText());
                 }
             }
-            mainFrame.designPanel.add(newComponent);
-            mainFrame.designPanel.updateUI();
+            mainFrame.designPanel.componentList.add(newComponent);
+            mainFrame.designPanel.update();
         } catch (ClassNotFoundException ex) {
             ex.printStackTrace();
         } catch (IllegalAccessException ex) {
@@ -70,6 +80,30 @@ public class ControlPanel extends JPanel {
         } catch (InvocationTargetException ex) {
             ex.printStackTrace();
         }
+    }
 
+    private void save (ActionEvent e){
+        String fileName = "save.xml";
+        XMLEncoder encoder = null;
+        try{
+            encoder = new XMLEncoder(new BufferedOutputStream(new FileOutputStream(fileName)));
+        }catch(FileNotFoundException fileNotFound){
+            System.out.println("ERROR: While Creating or Opening the File dvd.xml");
+        }
+        encoder.writeObject(this.mainFrame.designPanel.componentList);
+        encoder.close();
+    }
+
+    private void load (ActionEvent e){
+        String fileName = "save.xml";
+        XMLDecoder decoder = null;
+        try {
+            decoder = new XMLDecoder(new BufferedInputStream(new FileInputStream(fileName)));
+        } catch (FileNotFoundException fileNotFound) {
+            System.out.println("ERROR: File dvd.xml not found");
+        }
+        this.mainFrame.designPanel.componentList= (List<Component>) decoder.readObject();
+        this.mainFrame.designPanel.update();
+        decoder.close();
     }
 }
